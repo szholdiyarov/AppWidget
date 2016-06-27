@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">App Widget</string>
+    <string name="up">UP</string>
+    <string name="down">DOWN</string>
+    <string name="button_save">SAVE RSS</string>
+
+</resources>
