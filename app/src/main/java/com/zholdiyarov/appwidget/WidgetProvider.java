@@ -8,9 +8,6 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
 
-/**
- * Created by zhold_000 on 28.06.2016.
- */
 public class WidgetProvider extends AppWidgetProvider {
 
     @Override
