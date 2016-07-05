@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by szholdiyarov on 6/28/16.
  * This class is used for parsing an XML file with RSS.
+ *
+ * @author Sanzhar Zholdiyarov
+ * @since 6/28/16
  */
 public class RssHandler extends DefaultHandler {
     private List<RssItem> rssItemList;

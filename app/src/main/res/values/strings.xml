@@ -4,5 +4,8 @@
     <string name="down">DOWN</string>
     <string name="button_save">SAVE RSS</string>
     <string name="edit_text_hint">Введите RSS адрес</string>
+    <string name="updating">Обновляю</string>
+    <string name="update_is_coming">Идет обновление...</string>
+
 
 </resources>

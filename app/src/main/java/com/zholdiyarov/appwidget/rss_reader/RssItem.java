@@ -1,8 +1,10 @@
 package com.zholdiyarov.appwidget.rss_reader;
 
 /**
- * Created by szholdiyarov on 6/28/16.
  * This class is the basic entity of rss item. It is used for saving "item" from rss.
+ *
+ * @author Sanzhar Zholdiyarov
+ * @since 6/28/16
  */
 public class RssItem {
     /* Variables */

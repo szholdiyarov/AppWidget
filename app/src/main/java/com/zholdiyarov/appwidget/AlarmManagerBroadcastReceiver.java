@@ -24,25 +24,37 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Created by szholdiyarov on 7/4/16.
+ * This is the implementation of the Alarm Manager by extending Broadcast Receiver.
+ *
+ * @author Sanzhar Zholdiyarov
+ * @see <a href="https://developer.android.com/reference/android/content/BroadcastReceiver.html">Android Developer Broadcast Receiver</a>
+ * @since 6/28/16
  */
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
+    /* Variable declaration */
     private static final String FORWARD_CLICK = "android.appwidget.action.GO_FORWARD";
     private static final String BACK_CLICK = "android.appwidget.action.GO_BACK";
     private static final String WAKE_LOCK_TAG = "com.zholdiyarov.app_widget.WAKE_LOG_TAG";
 
+    /**
+     * This method is called when the BroadcastReceiver is receiving an Intent broadcast.
+     * When this method is called we are updating rss item list in the new thread
+     *
+     * @param context The Context in which the receiver is running.
+     * @param intent  The Intent being received.
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         RssDownloader task = new RssDownloader(context);
         task.execute();
     }
 
-    private void print(String text) {
-        Log.d("AlarmManagerBroadcast", text);
-    }
-
-
+    /**
+     * This is the inner class which is used as Async Task to update rss feed and to update widget values.
+     */
     private class RssDownloader extends AsyncTask<Void, Void, RssReader> {
+
+        // Context where widget is running
         private Context mContext;
 
         public RssDownloader(Context context) {
@@ -51,55 +63,66 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         protected RssReader doInBackground(Void... voids) {
-            String feed = readFromUrl(Util.getRssUrl(mContext));
+            String feed = readFromUrl(Util.getRssUrl(mContext)); // download rss feed
             return new RssReader(feed);
         }
 
         @Override
         protected void onPostExecute(RssReader rssReader) {
-            print("onPostExecute");
             List<RssItem> rssItemList = null;
             try {
                 rssItemList = rssReader.getItems();
-                RssIterator.getInstance().setRssItemList(rssItemList);
+                RssIterator.getInstance().setRssItemList(rssItemList); // update rss feed
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
             PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
             //Acquire the lock
             wl.acquire();
 
+            // Intents for handling button press on the widget
             Intent intent_forward_click = new Intent(FORWARD_CLICK);
             Intent intent_back_click = new Intent(BACK_CLICK);
 
+            // PendingIntents for handling button press on the widget
             PendingIntent pendingIntent_forward_click = PendingIntent.getBroadcast(mContext,
                     0, intent_forward_click, PendingIntent.FLAG_UPDATE_CURRENT);
             PendingIntent pendingIntent_back_click = PendingIntent.getBroadcast(mContext,
                     0, intent_back_click, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-            //You can do the processing here update the widget/remote views.
             RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(),
                     R.layout.widget_layout);
 
-            print("update with title " + RssIterator.getInstance().getCurrentRssItem().getTitle());
-            print("update with description " + RssIterator.getInstance().getCurrentRssItem().getDescription());
+            // update title and description of the current rss item(displayed)
+            if (RssIterator.getInstance().getCurrentRssItem() != null) {
+                remoteViews.setTextViewText(R.id.textView_title, RssIterator.getInstance().getCurrentRssItem().getTitle());
+                remoteViews.setTextViewText(R.id.textView_text, RssIterator.getInstance().getCurrentRssItem().getDescription());
+            } else {
+                remoteViews.setTextViewText(R.id.textView_title, "Ошибка");
+                remoteViews.setTextViewText(R.id.textView_text, "Ошибка загрузки");
+            }
 
-            remoteViews.setTextViewText(R.id.textView_title, RssIterator.getInstance().getCurrentRssItem().getTitle());
-            remoteViews.setTextViewText(R.id.textView_text, RssIterator.getInstance().getCurrentRssItem().getDescription());
 
+            // setting button click intents
             remoteViews.setOnClickPendingIntent(R.id.actionButton_forward, pendingIntent_forward_click);
             remoteViews.setOnClickPendingIntent(R.id.actionButton_back, pendingIntent_back_click);
 
-            ComponentName thiswidget = new ComponentName(mContext, WidgetProvider.class);
-            AppWidgetManager manager = AppWidgetManager.getInstance(mContext);
-            manager.updateAppWidget(thiswidget, remoteViews);
+            // now simply update widget
+            ComponentName currentWidget = new ComponentName(mContext, WidgetProvider.class);
+            AppWidgetManager.getInstance(mContext).updateAppWidget(currentWidget, remoteViews);
+
             //Release the lock
             wl.release();
         }
 
-
+        /**
+         * This method is simply downloading a text
+         *
+         * @param uri Ths uri from which we should download the text
+         * @return String This returns the whole XML of the RSS.
+         */
         private String readFromUrl(String uri) {
             BufferedReader bufferedReader = null;
             try {
@@ -115,15 +138,14 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
                 }
                 bufferedReader.close();
 
-
                 return result;
 
             } catch (MalformedURLException e) {
-                Log.d("ReadFromUrl", "Exception " + e);
+                Log.d("ReadFromUrl", "MalformedURLException " + e);
             } catch (IOException e) {
-                Log.d("ReadFromUrl", "Exception " + e);
+                Log.d("ReadFromUrl", "IOException " + e);
             }
-            return null;
+            return null; // something went wrong
         }
     }
 

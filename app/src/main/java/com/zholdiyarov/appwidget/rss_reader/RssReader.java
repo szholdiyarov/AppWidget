@@ -9,8 +9,10 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 /**
- * Created by szholdiyarov on 6/28/16.
  * This class should be used DIRECTLY in the caller class to get list of RSS items.
+ *
+ * @author Sanzhar Zholdiyarov
+ * @since 6/28/16
  */
 public class RssReader {
     private String text;

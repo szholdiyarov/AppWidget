@@ -16,11 +16,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by szholdiyarov on 6/28/16.
- * Reference : https://developer.android.com/guide/topics/appwidgets/index.html#Configuring
  * This is the configuration activity. When user add a first instance of the widget this activity is opened and it allows user to save RSS url.
  * Checking of url correctness should be handled here.
  * URL is saved in the Shared Preference and can be found by Util.getRssUrl() . See Util class for more information.
+ *
+ * @author Sanzhar Zholdiyarov
+ * @see <a href="https://developer.android.com/guide/topics/appwidgets/index.html#Configuring">Android Developer App Widget Configuration Activity</a>
+ * @since 6/28/16
  */
 public class WidgetConfigurationActivity extends Activity {
 
