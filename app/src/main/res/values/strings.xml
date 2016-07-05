@@ -3,5 +3,6 @@
     <string name="up">UP</string>
     <string name="down">DOWN</string>
     <string name="button_save">SAVE RSS</string>
+    <string name="edit_text_hint">Введите RSS адрес</string>
 
 </resources>
