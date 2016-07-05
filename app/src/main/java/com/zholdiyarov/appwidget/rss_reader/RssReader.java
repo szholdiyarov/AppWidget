@@ -1,24 +1,16 @@
 package com.zholdiyarov.appwidget.rss_reader;
 
-import android.util.Log;
-
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 /**
  * Created by szholdiyarov on 6/28/16.
+ * This class should be used DIRECTLY in the caller class to get list of RSS items.
  */
 public class RssReader {
     private String text;

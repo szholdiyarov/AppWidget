@@ -10,9 +10,15 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.zholdiyarov.appwidget.utils.RssIterator;
+
 public class WidgetProvider extends AppWidgetProvider {
     private static final String FORWARD_CLICK = "android.appwidget.action.GO_FORWARD";
     private static final String BACK_CLICK = "android.appwidget.action.GO_BACK";
+
+    private void print(String text) {
+        Log.d("WidgetProvider", text);
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -21,15 +27,17 @@ public class WidgetProvider extends AppWidgetProvider {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
                 R.layout.widget_layout);
 
-        if(RssItemsCurrent.getInstance().getRssItemList() != null){
+        if (RssIterator.getInstance().getRssItemList() != null) {
             if (FORWARD_CLICK.equals(intent.getAction())) {
-                RssItemsCurrent.getInstance().moveForward();
+                RssIterator.getInstance().moveForward();
             } else if (BACK_CLICK.equals(intent.getAction())) {
-                RssItemsCurrent.getInstance().moveBack();
+                RssIterator.getInstance().moveBack();
             }
+            print("update with title " + RssIterator.getInstance().getCurrentRssItem().getTitle());
+            print("update with description " + RssIterator.getInstance().getCurrentRssItem().getDescription());
 
-            remoteViews.setTextViewText(R.id.textView_title, RssItemsCurrent.getInstance().getCurrentRssItem().getTitle());
-            remoteViews.setTextViewText(R.id.textView_text, RssItemsCurrent.getInstance().getCurrentRssItem().getDescription());
+            remoteViews.setTextViewText(R.id.textView_title, RssIterator.getInstance().getCurrentRssItem().getTitle());
+            remoteViews.setTextViewText(R.id.textView_text, RssIterator.getInstance().getCurrentRssItem().getDescription());
 
             ComponentName thiswidget = new ComponentName(context, WidgetProvider.class);
             AppWidgetManager manager = AppWidgetManager.getInstance(context);

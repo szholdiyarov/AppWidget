@@ -1,9 +1,5 @@
 package com.zholdiyarov.appwidget.rss_reader;
 
-import android.util.Log;
-
-import com.zholdiyarov.appwidget.RssItemsCurrent;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -13,6 +9,7 @@ import java.util.List;
 
 /**
  * Created by szholdiyarov on 6/28/16.
+ * This class is used for parsing an XML file with RSS.
  */
 public class RssHandler extends DefaultHandler {
     private List<RssItem> rssItemList;
@@ -29,7 +26,6 @@ public class RssHandler extends DefaultHandler {
     public List<RssItem> getRssItemList() {
         return rssItemList;
     }
-
 
     //Called when an opening tag is reached, such as <item> or <title>
     @Override
@@ -69,13 +65,14 @@ public class RssHandler extends DefaultHandler {
         if (currentItem != null) {
             //If parsingTitle is true, then that means we are inside a <title> tag so the text is the title of an item.
             if (parsingTitle)
-                currentItem.setTitle(new String(ch, start, length));
+                currentItem.appendTitle(new String(ch, start, length));
                 //If parsingLink is true, then that means we are inside a <link> tag so the text is the link of an item.
             else if (parsingLink)
                 currentItem.setLink(new String(ch, start, length));
                 //If parsingDescription is true, then that means we are inside a <description> tag so the text is the description of an item.
             else if (parsingDescription)
-                currentItem.setDescription(new String(ch, start, length));
+                currentItem.appendDescription(new String(ch, start, length));
+
         }
     }
 }

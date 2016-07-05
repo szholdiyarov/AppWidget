@@ -1,13 +1,11 @@
 package com.zholdiyarov.appwidget;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.PowerManager;
 import android.util.Log;
@@ -15,6 +13,7 @@ import android.widget.RemoteViews;
 
 import com.zholdiyarov.appwidget.rss_reader.RssItem;
 import com.zholdiyarov.appwidget.rss_reader.RssReader;
+import com.zholdiyarov.appwidget.utils.RssIterator;
 import com.zholdiyarov.appwidget.utils.Util;
 
 import java.io.BufferedReader;
@@ -30,10 +29,10 @@ import java.util.List;
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
     private static final String FORWARD_CLICK = "android.appwidget.action.GO_FORWARD";
     private static final String BACK_CLICK = "android.appwidget.action.GO_BACK";
+    private static final String WAKE_LOCK_TAG = "com.zholdiyarov.app_widget.WAKE_LOG_TAG";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        print("onReceiveeee");
         RssDownloader task = new RssDownloader(context);
         task.execute();
     }
@@ -62,12 +61,12 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
             List<RssItem> rssItemList = null;
             try {
                 rssItemList = rssReader.getItems();
-                RssItemsCurrent.getInstance().setRssItemList(rssItemList);
+                RssIterator.getInstance().setRssItemList(rssItemList);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "YOUR TAG");
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG);
             //Acquire the lock
             wl.acquire();
 
@@ -84,8 +83,11 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
             RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(),
                     R.layout.widget_layout);
 
-            remoteViews.setTextViewText(R.id.textView_title, RssItemsCurrent.getInstance().getCurrentRssItem().getTitle());
-            remoteViews.setTextViewText(R.id.textView_text, RssItemsCurrent.getInstance().getCurrentRssItem().getDescription());
+            print("update with title " + RssIterator.getInstance().getCurrentRssItem().getTitle());
+            print("update with description " + RssIterator.getInstance().getCurrentRssItem().getDescription());
+
+            remoteViews.setTextViewText(R.id.textView_title, RssIterator.getInstance().getCurrentRssItem().getTitle());
+            remoteViews.setTextViewText(R.id.textView_text, RssIterator.getInstance().getCurrentRssItem().getDescription());
 
             remoteViews.setOnClickPendingIntent(R.id.actionButton_forward, pendingIntent_forward_click);
             remoteViews.setOnClickPendingIntent(R.id.actionButton_back, pendingIntent_back_click);
@@ -107,15 +109,12 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
                 // Read all the text returned by the server
                 bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
                 String line;
-                String result = null;
+                String result = "";
                 while ((line = bufferedReader.readLine()) != null) {
                     result = result + line;
                 }
                 bufferedReader.close();
 
-                if (result.substring(0, 4).equalsIgnoreCase("null")) {
-                    result = result.substring(4, result.length());
-                }
 
                 return result;
 

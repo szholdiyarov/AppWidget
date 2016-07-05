@@ -3,24 +3,15 @@ package com.zholdiyarov.appwidget.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.zholdiyarov.appwidget.WidgetConfigurationActivity;
-
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by szholdiyarov on 7/4/16.
+ * This class is used for accessing shared preferences to save and to retrieve rss url.
  */
 public class Util {
 
     public static final String CONFIGURATION_PREF_NAME = "WidgetConfigDetails";
     public static final String CONFIGURATION_RSS_NAME = "rss";
-
-    public static String getCurrentTime(String timeformat) {
-        Format formatter = new SimpleDateFormat(timeformat);
-        return formatter.format(new Date());
-    }
 
     public static void saveRssUrlInSharedPreferences(Context context, String rssUrl) {
         SharedPreferences settings = context.getSharedPreferences(CONFIGURATION_PREF_NAME, 0);

@@ -17,10 +17,15 @@ import java.util.regex.Pattern;
 
 /**
  * Created by szholdiyarov on 6/28/16.
+ * Reference : https://developer.android.com/guide/topics/appwidgets/index.html#Configuring
+ * This is the configuration activity. When user add a first instance of the widget this activity is opened and it allows user to save RSS url.
+ * Checking of url correctness should be handled here.
+ * URL is saved in the Shared Preference and can be found by Util.getRssUrl() . See Util class for more information.
  */
 public class WidgetConfigurationActivity extends Activity {
-    String testing = "http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml";
-    int mAppWidgetId = 0;
+
+    private final String SAMPLE_RSS_URL = "http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"; // just for testing purposes.
+    private int mAppWidgetId = 0;
 
     /**
      * Called when the activity is first created.
@@ -38,14 +43,17 @@ public class WidgetConfigurationActivity extends Activity {
                     AppWidgetManager.EXTRA_APPWIDGET_ID,
                     AppWidgetManager.INVALID_APPWIDGET_ID);
         }
-        Button button_save = (Button) findViewById(R.id.button_save_rss);
+
+        final Button button_save = (Button) findViewById(R.id.button_save_rss);
         final EditText editText = (EditText) findViewById(R.id.edit_text_rss);
-        editText.setText(testing);
+
+        editText.setText(SAMPLE_RSS_URL); // show sample url
+
         button_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String rssUrl = editText.getText().toString();
-                if (!TextUtils.isEmpty(rssUrl)) {
+                if (!TextUtils.isEmpty(rssUrl)) { // check if url entered by user is not empty
                     closeConfigActivity(rssUrl);
                 } else {
                     showWarning("Введите rss");
@@ -61,6 +69,7 @@ public class WidgetConfigurationActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        // NOTHING TO DO HERE
     }
 
     /**
@@ -69,7 +78,7 @@ public class WidgetConfigurationActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-
+        // NOTHING TO DO HERE
     }
 
     /**
@@ -78,6 +87,7 @@ public class WidgetConfigurationActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        // NOTHING TO DO HERE
     }
 
     /**
@@ -108,6 +118,7 @@ public class WidgetConfigurationActivity extends Activity {
             showWarning("Введите правильный RSS");
         }
     }
+
 
     private void showWarning(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
